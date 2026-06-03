@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Jera On Air Timetable</title>
+    <link rel="icon" href="assets/jera-icon.png">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="app-header">
+        <div class="brand">
+          <img src="assets/jera-icon.png" alt="Jera On Air" class="brand-mark">
+          <div>
+            <p class="eyebrow">Jera On Air 2026</p>
+            <h1>Timetable</h1>
+          </div>
+        </div>
+
+        <nav class="view-switch" aria-label="Ansicht wechseln">
+          <button class="view-button active" type="button" data-view="all" aria-pressed="true">
+            Gesamtplan
+          </button>
+          <button class="view-button" type="button" data-view="favorites" aria-pressed="false">
+            Meine Favoriten
+            <span class="favorite-count" data-favorite-count>0</span>
+          </button>
+        </nav>
+      </header>
+
+      <section class="controls" aria-label="Timetable Filter">
+        <div class="day-tabs" data-day-tabs></div>
+
+        <label class="search-field">
+          <span>Suche</span>
+          <input type="search" placeholder="Artist suchen" data-search>
+        </label>
+
+        <label class="select-field">
+          <span>Bühne</span>
+          <select data-stage-filter>
+            <option value="all">Alle Bühnen</option>
+          </select>
+        </label>
+      </section>
+
+      <section class="summary" aria-live="polite">
+        <div>
+          <p class="summary-kicker" data-summary-kicker>Alle Artists</p>
+          <h2 data-summary-title>Donnerstag</h2>
+        </div>
+        <p data-summary-detail>0 Shows</p>
+      </section>
+
+      <section class="timeline" data-timeline aria-label="Auftritte"></section>
+    </main>
+
+    <script src="src/timetable-data.js"></script>
+    <script src="src/app.js"></script>
+  </body>
+</html>
