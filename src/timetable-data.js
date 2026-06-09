@@ -2,14 +2,14 @@ window.JERA_TIMETABLE = {
   source: {
     name: "Jera On Air 2026",
     url: "https://www.jeraonair.nl/de/timetable/",
-    fetchedAt: "2026-06-03",
+    fetchedAt: "2026-06-09",
   },
   dayMeta: {
     THU: { label: "Donnerstag", shortLabel: "THU", date: "25.06.2026" },
     FRI: { label: "Freitag", shortLabel: "FRI", date: "26.06.2026" },
     SAT: { label: "Samstag", shortLabel: "SAT", date: "27.06.2026" },
   },
-  stages: ["Eagle", "Vulture", "Buzzard", "Hawk", "Sparrow", "Raven"],
+  stages: ["Eagle","Hawk","Raven","Sparrow","Buzzard","Vulture"],
   performances: [
   {
     "id": "THU-51-eagle-1500",
@@ -28,6 +28,15 @@ window.JERA_TIMETABLE = {
     "stage": "Hawk",
     "start": "15:00",
     "end": "15:30"
+  },
+  {
+    "id": "THU-170-raven-1500",
+    "bandId": "170",
+    "day": "THU",
+    "artist": "Dynamo Heavy Bingo",
+    "stage": "Raven",
+    "start": "15:00",
+    "end": "18:00"
   },
   {
     "id": "THU-140-sparrow-1500",
@@ -127,6 +136,15 @@ window.JERA_TIMETABLE = {
     "stage": "Hawk",
     "start": "18:00",
     "end": "18:50"
+  },
+  {
+    "id": "THU-169-raven-1800",
+    "bandId": "169",
+    "day": "THU",
+    "artist": "Emo Night Mainland",
+    "stage": "Raven",
+    "start": "18:00",
+    "end": "01:00"
   },
   {
     "id": "THU-141-sparrow-1845",

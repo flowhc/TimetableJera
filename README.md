@@ -31,7 +31,7 @@ Die Timetable-Daten wurden aus der offiziellen Seite extrahiert:
 https://www.jeraonair.nl/de/timetable/
 ```
 
-Aktueller Datenstand: 2026-06-03.
+Aktueller Datenstand: 2026-06-09.
 
 Falls der offizielle Plan aktualisiert wird, koennen die HTML-Dateien erneut geladen und das Datenmodul neu erzeugt werden:
 
@@ -40,4 +40,10 @@ curl -L 'https://www.jeraonair.nl/de/timetable/?day=THU' -o /private/tmp/jera_TH
 curl -L 'https://www.jeraonair.nl/de/timetable/?day=FRI' -o /private/tmp/jera_FRI.html
 curl -L 'https://www.jeraonair.nl/de/timetable/?day=SAT' -o /private/tmp/jera_SAT.html
 node scripts/export-timetable-data.cjs
+```
+
+Zum Abgleich der App-Daten mit den frisch geladenen HTML-Dateien:
+
+```sh
+node scripts/check-timetable-data.cjs
 ```

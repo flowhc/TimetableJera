@@ -2,6 +2,7 @@ const fs = require("fs");
 const path = require("path");
 
 const workspace = path.resolve(__dirname, "..");
+const fetchedAt = process.env.TIMETABLE_FETCHED_AT || "2026-06-09";
 const sourceFiles = {
   THU: "/private/tmp/jera_THU.html",
   FRI: "/private/tmp/jera_FRI.html",
@@ -30,32 +31,41 @@ function sortMinutes(time) {
 }
 
 function parseDay(html, day) {
+  const lines = html.split(/\n/);
   const performances = [];
-  const rowRegex =
-    /<div class="stage-row\s+([^"\s]+)"[\s\S]*?style="[^"]*">([\s\S]*?)<\/div>\s*(?=<div class="stage-row|<\/div>\s*<\/div>\s*<\/div>)/g;
-  let rowMatch;
+  let stage = "";
+  let inButton = false;
+  let button = "";
 
-  while ((rowMatch = rowRegex.exec(html))) {
-    const stage = rowMatch[1][0].toUpperCase() + rowMatch[1].slice(1);
-    const performanceRegex =
-      /<button class="performance[^"]*"\s+style="([^"]+)"\s+data-band="([^"]+)">([\s\S]*?)<\/button>/g;
-    let performanceMatch;
+  for (const line of lines) {
+    const stageMatch = line.match(/<div class="stage-row\s+([^"\s]+)"/);
+    if (stageMatch) {
+      stage = stageMatch[1][0].toUpperCase() + stageMatch[1].slice(1);
+    }
 
-    while ((performanceMatch = performanceRegex.exec(rowMatch[2]))) {
-      const body = performanceMatch[3];
-      const bandMatch = body.match(/<span class="band-name">([\s\S]*?)<\/span>/);
-      const timeMatch = body.match(/<span class="time-range">([\s\S]*?)<\/span>/);
+    if (line.includes('<button class="performance')) {
+      inButton = true;
+      button = `${line}\n`;
+    } else if (inButton) {
+      button += `${line}\n`;
+    }
 
-      if (!bandMatch || !timeMatch) {
-        continue;
-      }
-
-      const artist = clean(bandMatch[1]);
-      const range = clean(timeMatch[1]).replace(/\s*-\s*/g, " - ");
+    if (inButton && line.includes("</button>")) {
+      const bandId = button.match(/data-band="([^"]+)"/)?.[1];
+      const artist = clean(
+        button.match(/<span class="band-name">([\s\S]*?)<\/span>/)?.[1] || "",
+      );
+      const range = clean(
+        button.match(/<span class="time-range">([\s\S]*?)<\/span>/)?.[1] || "",
+      ).replace(/\s*-\s*/g, " - ");
       const [start, end] = range.split(" - ").map((part) => part.trim());
 
+      if (!bandId || !artist || !stage || !start || !end) {
+        throw new Error(`Could not parse performance for ${day}: ${button.slice(0, 160)}`);
+      }
+
       performances.push({
-        bandId: performanceMatch[2],
+        bandId,
         day,
         artist,
         stage,
@@ -63,6 +73,9 @@ function parseDay(html, day) {
         end,
         sort: sortMinutes(start),
       });
+
+      inButton = false;
+      button = "";
     }
   }
 
@@ -86,19 +99,20 @@ const performances = rows.map(({ sort, ...item }) => {
     ...item,
   };
 });
+const stages = [...new Set(performances.map((performance) => performance.stage))];
 
 const moduleText = `window.JERA_TIMETABLE = {
   source: {
     name: "Jera On Air 2026",
     url: "https://www.jeraonair.nl/de/timetable/",
-    fetchedAt: "2026-06-03",
+    fetchedAt: "${fetchedAt}",
   },
   dayMeta: {
     THU: { label: "Donnerstag", shortLabel: "THU", date: "25.06.2026" },
     FRI: { label: "Freitag", shortLabel: "FRI", date: "26.06.2026" },
     SAT: { label: "Samstag", shortLabel: "SAT", date: "27.06.2026" },
   },
-  stages: ["Eagle", "Vulture", "Buzzard", "Hawk", "Sparrow", "Raven"],
+  stages: ${JSON.stringify(stages)},
   performances: ${JSON.stringify(performances, null, 2)}
 };
 `;
