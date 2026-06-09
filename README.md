@@ -47,3 +47,5 @@ Zum Abgleich der App-Daten mit den frisch geladenen HTML-Dateien:
 ```sh
 node scripts/check-timetable-data.cjs
 ```
+
+Hinweis: Im offiziellen HTML ist aktuell ein doppelter `End It`-Eintrag fuer `SAT / Buzzard / 17:00-17:50` enthalten, der exakt mit `Doodseskader` kollidiert. Dieser bekannte CMS-Duplikat-Datensatz wird beim Export ignoriert; `End It` bleibt mit dem Slot `19:00-19:50` enthalten.

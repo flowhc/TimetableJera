@@ -7,6 +7,48 @@ const sourceFiles = {
   SAT: "/private/tmp/jera_SAT.html",
 };
 
+const ignoredSourceRows = [
+  {
+    day: "SAT",
+    bandId: "60",
+    artist: "End It",
+    stage: "Buzzard",
+    start: "17:00",
+    end: "17:50",
+    reason: "Duplicate CMS row overlapping Doodseskader; End It also has the 19:00 slot.",
+  },
+];
+
+function matchesIgnoredSourceRow(row, ignored) {
+  return (
+    row.day === ignored.day &&
+    row.bandId === ignored.bandId &&
+    row.artist === ignored.artist &&
+    row.stage === ignored.stage &&
+    row.start === ignored.start &&
+    row.end === ignored.end
+  );
+}
+
+function splitIgnoredSourceRows(rows) {
+  return rows.reduce(
+    (result, row) => {
+      const ignored = ignoredSourceRows.find((ignoredRow) =>
+        matchesIgnoredSourceRow(row, ignoredRow),
+      );
+
+      if (ignored) {
+        result.ignored.push({ ...row, reason: ignored.reason });
+      } else {
+        result.kept.push(row);
+      }
+
+      return result;
+    },
+    { kept: [], ignored: [] },
+  );
+}
+
 function clean(text) {
   return text
     .replace(/<[^>]*>/g, " ")
@@ -86,9 +128,10 @@ function countsByDay(rows) {
   }, {});
 }
 
-const fresh = Object.entries(sourceFiles).flatMap(([day, file]) =>
+const rawFresh = Object.entries(sourceFiles).flatMap(([day, file]) =>
   parseSourceFile(file, day),
 );
+const { kept: fresh, ignored } = splitIgnoredSourceRows(rawFresh);
 const current = loadCurrentData();
 const freshMap = new Map(addOccurrenceKeys(fresh).map((row) => [row.key, row]));
 const currentMap = new Map(addOccurrenceKeys(current).map((row) => [row.key, row]));
@@ -124,9 +167,11 @@ console.log(
   JSON.stringify(
     {
       currentTotal: current.length,
+      rawFreshTotal: rawFresh.length,
       freshTotal: fresh.length,
       currentCounts: countsByDay(current),
       freshCounts: countsByDay(fresh),
+      ignoredSourceRows: ignored,
       changes,
     },
     null,

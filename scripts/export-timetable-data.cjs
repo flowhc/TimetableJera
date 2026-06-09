@@ -9,6 +9,35 @@ const sourceFiles = {
   SAT: "/private/tmp/jera_SAT.html",
 };
 
+const ignoredSourceRows = [
+  {
+    day: "SAT",
+    bandId: "60",
+    artist: "End It",
+    stage: "Buzzard",
+    start: "17:00",
+    end: "17:50",
+    reason: "Duplicate CMS row overlapping Doodseskader; End It also has the 19:00 slot.",
+  },
+];
+
+function matchesIgnoredSourceRow(row, ignored) {
+  return (
+    row.day === ignored.day &&
+    row.bandId === ignored.bandId &&
+    row.artist === ignored.artist &&
+    row.stage === ignored.stage &&
+    row.start === ignored.start &&
+    row.end === ignored.end
+  );
+}
+
+function removeIgnoredSourceRows(rows) {
+  return rows.filter(
+    (row) => !ignoredSourceRows.some((ignored) => matchesIgnoredSourceRow(row, ignored)),
+  );
+}
+
 function clean(text) {
   return text
     .replace(/<[^>]*>/g, " ")
@@ -85,8 +114,10 @@ function parseDay(html, day) {
 }
 
 const seen = new Map();
-const rows = Object.entries(sourceFiles).flatMap(([day, file]) =>
-  parseDay(fs.readFileSync(file, "utf8"), day),
+const rows = removeIgnoredSourceRows(
+  Object.entries(sourceFiles).flatMap(([day, file]) =>
+    parseDay(fs.readFileSync(file, "utf8"), day),
+  ),
 );
 
 const performances = rows.map(({ sort, ...item }) => {

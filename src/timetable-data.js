@@ -939,15 +939,6 @@ window.JERA_TIMETABLE = {
     "end": "17:50"
   },
   {
-    "id": "SAT-60-buzzard-1700",
-    "bandId": "60",
-    "day": "SAT",
-    "artist": "End It",
-    "stage": "Buzzard",
-    "start": "17:00",
-    "end": "17:50"
-  },
-  {
     "id": "SAT-135-raven-1700",
     "bandId": "135",
     "day": "SAT",
